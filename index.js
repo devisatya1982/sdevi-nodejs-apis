@@ -6,6 +6,7 @@ import sum from "./another-file.js";
 import moment from "moment";
 
 app.use(cors());
+
 app.get("/", async (req, res) => {
   try {
     res.send("Hello Satyanarayana Devi, this is main route default path!");
@@ -36,6 +37,6 @@ app.use(json());
 
 app.listen(process.env.PORT || port, () => {
   console.log(
-    ` Hello Satya, Express Server Is Running... at http://localhost:${port}`
+    ` Hello Satya, Express Server Is Running... at http://localhost:${port} , only on Local`
   );
 });
