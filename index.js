@@ -8,7 +8,7 @@ import moment from "moment";
 app.use(cors());
 app.get("/", async (req, res) => {
   try {
-    res.send("Hello Satya D, this is main route default path!");
+    res.send("Hello Satyanarayana Devi, this is main route default path!");
   } catch (err) {
     res.send("Error " + err);
   }
