@@ -2,7 +2,7 @@ import express, { json } from "express";
 import cors from "cors";
 const app = express();
 const port = 9000;
-import sum from "./another-file.js";
+import sum from "./components/another-file.js";
 import moment from "moment";
 
 import  mongoDBRouter  from "./components/mongodb/databases.js";
