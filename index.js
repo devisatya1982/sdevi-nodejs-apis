@@ -5,12 +5,11 @@ const port = 9000;
 import sum from "./components/another-file.js";
 import moment from "moment";
 
-import  mongoDBRouter  from "./components/mongodb/databases.js";
+import mongoDBRouter from "./components/mongodb/databases.js";
 import employeeRouter from "./components/mongodb/employees.js";
 import emailsRouter from "./components/mongodb/emails.js";
- import eventRouter from "./components/mongodb/events.js";
+import eventRouter from "./components/mongodb/events.js";
 import authenticationRouter from "./components/authentication/auth-api.js";
-
 
 app.use(cors());
 
@@ -22,8 +21,6 @@ app.get("/", async (req, res) => {
   }
 });
 
-
-
 app.get("/sum", async (req, res) => {
   try {
     res.send(`The sum is ${sum(5, 5)}`);
@@ -34,7 +31,11 @@ app.get("/sum", async (req, res) => {
 
 app.get("/time", async (req, res) => {
   try {
-    res.send(`Hello Satya, Current Time Is ==> ${moment().format('MMMM Do YYYY, h:mm:ss a')}`);
+    res.send(
+      `Hello Satya, Current Time Is ==> ${moment().format(
+        "MMMM Do YYYY, h:mm:ss a"
+      )}`
+    );
   } catch (err) {
     res.send("Error " + err);
   }
@@ -42,13 +43,11 @@ app.get("/time", async (req, res) => {
 
 app.use(json());
 
-app.use('/mongodb', mongoDBRouter)
-app.use('/auth', authenticationRouter)
- app.use('/employee', employeeRouter)
- app.use('/event', eventRouter)
- app.use('/email', emailsRouter)
-
-
+app.use("/mongodb", mongoDBRouter);
+app.use("/auth", authenticationRouter);
+app.use("/employee", employeeRouter);
+app.use("/event", eventRouter);
+app.use("/email", emailsRouter);
 
 app.listen(process.env.PORT || port, () => {
   console.log(

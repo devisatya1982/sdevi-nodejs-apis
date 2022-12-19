@@ -1,9 +1,10 @@
 import { MongoClient } from "mongodb";
 import { Router } from "express";
 const router = Router();
-import pkg from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
-const { sign } = pkg;
+
+const { sign } = jwt;
 
 const uri =
   "mongodb+srv://sdevi:test@sdevicluster.wtwtl.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
