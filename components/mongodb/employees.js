@@ -153,7 +153,7 @@ router.get("/employees/:employeeId", async (req, res) => {
     // TODO : Validations
     const currentDatabase = client.db(database);
     const currentCollection = currentDatabase.collection(collection);
-    const currentEmployeeId = req.params.employeeId;
+    const currentEmployeeId = Number(req.params.employeeId);
 
     const result = await currentCollection.findOne({
       employeeId: currentEmployeeId,
