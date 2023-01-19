@@ -57,7 +57,7 @@ router.post("/login", async (req, res) => {
     const currentCollection = currentDatabase.collection(collection);
     const userData = req.body;
 
-    const query = { email: userData.email };
+    const query = { email: userData.username };
     const foundUserData = await currentCollection.findOne(query);
 
     if (!foundUserData) {
