@@ -70,7 +70,7 @@ router.post("/login", async (req, res) => {
       res.status(200).send({ token });
     }
   } catch (err) {
-    res.send("Error " + err);
+    res.send("Error => " + err);
   } finally {
     await client.close();
   }
