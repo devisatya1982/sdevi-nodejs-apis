@@ -81,10 +81,8 @@ router.post("/emails", async (req, res) => {
     
    await transporter.sendMail(mailOptions, function(error, info){
       if (error) {
-       // console.log(error);
         res.status(200).send(`Error has been generated! ==> ${error}`);
       } else {
-      //  console.log('Email sent: ' + info.response);
         res.status(200).send(`New Email has been sent! ==> ${info.response}`);
       }
     });

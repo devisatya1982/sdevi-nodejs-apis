@@ -2,6 +2,7 @@ import { MongoClient } from "mongodb";
 import { Router } from "express";
 const router = Router();
 import jwt from "jsonwebtoken";
+import { createTransport } from "nodemailer";
 
 const { sign } = jwt;
 
@@ -18,7 +19,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/register", async (req, res) => {
+router.post("/signup", async (req, res) => {
   const client = new MongoClient(uri);
 
   try {
@@ -35,9 +36,26 @@ router.post("/register", async (req, res) => {
 
     const insertedOneUser = await currentCollection.insertOne(userData);
 
-    insertedOneUser.acknowledged && insertedOneUser.insertedId > 0
-      ? res.status(200).send(true)
-      : res.status(404).send(false);
+    await emailSender(userData, res, "signup");
+
+    let currentStatus = {
+      message: "",
+      status: false,
+    };
+
+    if (insertedOneUser.acknowledged && insertedOneUser.insertedId > 0) {
+      currentStatus = {
+        message: `Please Activate Your Account With the Key Sent to your registered email : ${userData.email}`,
+        status: true,
+      };
+      res.status(200).send(currentStatus);
+    } else {
+      currentStatus = {
+        message: "User Not Registered Properly!",
+        status: false,
+      };
+      res.status(404).send(currentStatus);
+    }
   } catch (err) {
     res.send("Error " + err);
   } finally {
@@ -59,16 +77,42 @@ router.post("/login", async (req, res) => {
     const query = { email: userData.email };
     const foundUserData = await currentCollection.findOne(query);
 
+    let currentStatus = {
+      token: "",
+      message: "",
+      status: false,
+    };
+
     if (!foundUserData) {
-      res.status(401).send("Invalid Email");
+      currentStatus = {
+        message: "Invalid Email",
+        status: false,
+      };
+      res.status(401).send(currentStatus);
     } else if (foundUserData.password !== userData.password) {
-      res.status(401).send("Invalid Password");
+      currentStatus = {
+        message: "Invalid Password",
+        status: false,
+      };
+      res.status(401).send(currentStatus);
     } else if (!foundUserData.isActivated) {
-      res.status(401).send("User Must Be Activated");
+      currentStatus = {
+        message: "User Must Be Activated",
+        status: false,
+      };
+
+      res.status(401).send(currentStatus);
     } else {
       let payload = { subject: foundUserData.email };
       let token = sign(payload, "secretKey");
-      res.status(200).send({ token });
+
+      currentStatus = {
+        token: token,
+        message: "Token generated successfully!, Redirecting to Landing Page!",
+        status: true,
+      };
+
+      res.status(200).send(currentStatus);
     }
   } catch (err) {
     res.send("Error => " + err);
@@ -100,7 +144,7 @@ router.post("/activate", async (req, res) => {
       res.status(401).send("Key is not valid!");
     } else {
       let currentStatusSuccess = {
-        message: "User Already Activated!",
+        message: "User Already Activated!, Redirecting to Login Page",
         status: true,
       };
 
@@ -118,11 +162,17 @@ router.post("/activate", async (req, res) => {
           { $set: foundUserData }
         );
         currentStatusSuccess = {
-          message:"User Activated",
+          message: "User Activated, Redirecting to Login Page",
           status: true,
-        }
+        };
 
-        res.status(200).send(updatedOneResult.modifiedCount > 0 ? currentStatusSuccess : currentStatusNotSuccess);
+        res
+          .status(200)
+          .send(
+            updatedOneResult.modifiedCount > 0
+              ? currentStatusSuccess
+              : currentStatusNotSuccess
+          );
       }
     }
   } catch (err) {
@@ -132,4 +182,76 @@ router.post("/activate", async (req, res) => {
   }
 });
 
+router.post("/forgotpwd", async (req, res) => {
+  const client = new MongoClient(uri);
+
+  try {
+    await client.connect();
+
+    // TODO : Validations
+    const currentDatabase = client.db(DATABASE);
+    const currentCollection = currentDatabase.collection(TABLE);
+    const userData = req.body;
+
+    const query = { email: userData.email };
+    const foundUserData = await currentCollection.findOne(query);
+
+  
+
+    let currentStatusNotSuccess = {
+      message: `Email : ${userData.email} not found`,
+      status: false,
+    };
+
+    if (!foundUserData) {
+      res.status(401).send(currentStatusNotSuccess);
+    } else {
+      await emailSender(foundUserData, res, "forgotpwd");
+
+      let currentStatusSuccess = {
+        message: `Your password has been sent to your registered email : ${foundUserData?.email}`,
+        status: true,
+      };
+
+      res.status(200).send(currentStatusSuccess);
+    }
+  } catch (err) {
+    res.send("Error => " + err);
+  } finally {
+    await client.close();
+  }
+});
+
 export default router;
+async function emailSender(userData, res, typeOfEmail) {
+  let transporter = createTransport({
+    service: "gmail",
+    host: "smtp.gmail.com",
+    secure: false,
+    auth: {
+      user: "devisatya1982@gmail.com",
+      pass: "mkdeavmkjgclgrya",
+    },
+  });
+
+  let mailOptions = {
+    from: "devisatya1982@gmail.com",
+    to: userData.email,
+    subject:
+      typeOfEmail === "signup"
+        ? " SATYANARAYANA DEVI !! Activation Key  !!"
+        : "SATYANARAYANA DEVI !! Your Password !!",
+    text:
+      typeOfEmail === "signup"
+        ? `Your Activation Key : ${userData.key}`
+        : ` Your Password is : ${userData.password}`,
+  };
+
+  await transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      res.status(200).send(`Error has been generated! ==> ${error}`);
+    } else {
+      res.status(200).send(`New Email has been sent! ==> ${info.response}`);
+    }
+  });
+}
