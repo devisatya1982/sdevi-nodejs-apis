@@ -33,28 +33,39 @@ router.post("/signup", async (req, res) => {
     userData._id = Date.now();
     userData.key = Date.now();
     userData.isActivated = false;
+    userData.role = "user";
 
-    const insertedOneUser = await currentCollection.insertOne(userData);
-
-    await emailSender(userData, res, "signup");
-
-    let currentStatus = {
-      message: "",
-      status: false,
-    };
-
-    if (insertedOneUser.acknowledged && insertedOneUser.insertedId > 0) {
-      currentStatus = {
-        message: `Please Activate Your Account With the Key Sent to your registered email : ${userData.email}`,
-        status: true,
-      };
-      res.status(200).send(currentStatus);
-    } else {
-      currentStatus = {
-        message: "User Not Registered Properly!",
+    const query = { email: userData.email };
+    const foundUserData = await currentCollection.findOne(query);
+    if (foundUserData) {
+      let currentStatus = {
+        message: `Email : ${userData.email} already exists`,
         status: false,
       };
-      res.status(404).send(currentStatus);
+      res.status(401).send(currentStatus);
+    } else {
+      const insertedOneUser = await currentCollection.insertOne(userData);
+
+      await emailSender(userData, res, "signup");
+
+      let currentStatus = {
+        message: "",
+        status: false,
+      };
+
+      if (insertedOneUser.acknowledged && insertedOneUser.insertedId > 0) {
+        currentStatus = {
+          message: `Please Activate Your Account With the Key Sent to your registered email : ${userData.email}`,
+          status: true,
+        };
+        res.status(200).send(currentStatus);
+      } else {
+        currentStatus = {
+          message: "User Not Registered Properly!",
+          status: false,
+        };
+        res.status(404).send(currentStatus);
+      }
     }
   } catch (err) {
     res.send("Error " + err);
@@ -81,6 +92,11 @@ router.post("/login", async (req, res) => {
       token: "",
       message: "",
       status: false,
+      user: {
+        email: "",
+        name: "",
+        role: "",
+      },
     };
 
     if (!foundUserData) {
@@ -110,6 +126,11 @@ router.post("/login", async (req, res) => {
         token: token,
         message: "Token generated successfully!, Redirecting to Landing Page!",
         status: true,
+        user: {
+          email: foundUserData.email,
+          name: foundUserData.firstName + " " + foundUserData.lastName,
+          role: foundUserData.role,
+        },
       };
 
       res.status(200).send(currentStatus);
@@ -195,8 +216,6 @@ router.post("/forgotpwd", async (req, res) => {
 
     const query = { email: userData.email };
     const foundUserData = await currentCollection.findOne(query);
-
-  
 
     let currentStatusNotSuccess = {
       message: `Email : ${userData.email} not found`,
