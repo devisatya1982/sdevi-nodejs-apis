@@ -1,11 +1,14 @@
-import  { MongoClient } from "mongodb";
-import  { Router } from "express";
+import { MongoClient } from "mongodb";
+import { Router } from "express";
 const router = Router();
 
 // import verifyToken from "../authentication/token-service";
 
 const uri =
   "mongodb+srv://sdevi:test@sdevicluster.wtwtl.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+
+const DATABASE = "satyas";
+const TABLE = "employee";
 
 // http://localhost:9000/employee
 router.get("/", async (req, res) => {
@@ -18,14 +21,12 @@ router.get("/", async (req, res) => {
 
 router.get("/employees", async (req, res) => {
   const client = new MongoClient(uri);
-  const database = "satyas";
-  const collection = "employee";
   try {
     await client.connect();
 
     // TODO : Validations
-    const currentDatabase = client.db(database);
-    const currentCollection = currentDatabase.collection(collection);
+    const currentDatabase = client.db(DATABASE);
+    const currentCollection = currentDatabase.collection(TABLE);
 
     const query = {};
     const options = {};
@@ -43,25 +44,27 @@ router.get("/employees", async (req, res) => {
 
 // http://localhost:9000/employee/employees
 // {
-//   "employeeId":"10006",
+//   "_id":"10006",
 //   "employeeName": "Jadeja",
 //   "employeeSal": "111116"
 // }
 router.post("/employees", async (req, res) => {
   const client = new MongoClient(uri);
-  const database = "satyas";
-  const collection = "employee";
   try {
     await client.connect();
 
     // TODO : Validations
-    const currentDatabase = client.db(database);
-    const currentCollection = currentDatabase.collection(collection);
+    const currentDatabase = client.db(DATABASE);
+    const currentCollection = currentDatabase.collection(TABLE);
     const newEmployee = req.body;
+    newEmployee._id = Date.now();
+    delete newEmployee.employeeId;
 
-    const result = await currentCollection.insertOne(newEmployee);
+    const insertOneResult = await currentCollection.insertOne(newEmployee);
 
-    res.status(200).send(newEmployee);
+    insertOneResult.acknowledged && insertOneResult.insertedId > 0
+      ? res.status(200).send(true)
+      : res.status(204).send(false);
   } catch (err) {
     res.status(500).send("Error " + err);
   } finally {
@@ -71,29 +74,26 @@ router.post("/employees", async (req, res) => {
 
 // http://localhost:9000/employee/employees
 // {
-//   "employeeId":"10006",
+//   "_id":"10006",
 //   "employeeName": "Jadeja updated",
 //   "employeeSal": "1111160000"
 // }
 router.patch("/employees", async (req, res) => {
   const client = new MongoClient(uri);
-  const database = "satyas";
-  const collection = "employee";
   try {
     await client.connect();
 
     // TODO : Validations
-    const currentDatabase = client.db(database);
-    const currentCollection = currentDatabase.collection(collection);
+    const currentDatabase = client.db(DATABASE);
+    const currentCollection = currentDatabase.collection(TABLE);
     const currentBody = req.body;
 
-    //  TODO : Update must be happen based _id rather than name.
-    const result = await currentCollection.updateOne(
-      { employeeId: currentBody.employeeId },
+    const updatedOneResult = await currentCollection.updateOne(
+      { _id: currentBody._id },
       { $set: currentBody }
     );
 
-    res.status(200).send(result.modifiedCount > 0 ? true : false);
+    res.status(200).send(updatedOneResult.modifiedCount > 0 ? true : false);
   } catch (err) {
     res.status(500).send("Error " + err);
   } finally {
@@ -103,33 +103,24 @@ router.patch("/employees", async (req, res) => {
 
 // http://localhost:9000/employee/employees/10006
 // router.delete("/employees/:employeeId", verifyToken, async (req, res) => {
-router.delete("/employees", async (req, res) => {
+router.delete("/employees/:_id", async (req, res) => {
   const client = new MongoClient(uri);
-  const database = "satyas";
-  const collection = "employee";
   try {
     await client.connect();
 
     // TODO : Validations
-    const currentDatabase = client.db(database);
-    const currentCollection = currentDatabase.collection(collection);
+    const currentDatabase = client.db(DATABASE);
+    const currentCollection = currentDatabase.collection(TABLE);
 
-    // const currentEmployeeId = req.params.employeeId;
+    const currentEmployeeId = Number(req.params._id);
 
-    const currentBody = req.body;
     const result = await currentCollection.deleteOne({
-      employeeId: currentBody.employeeId,
+      _id: currentEmployeeId,
     });
 
-    result.deletedCount > 0
-      ? res.status(200).send(currentBody)
-      : res.sendStatus(404);
-
-    // res.status(200).send(
-    //   result.deletedCount > 0
-    //     ? `${currentBody.employeeId} details have been removed successfully!`
-    //     : `No records found with the ${currentBody.employeeId} !`
-    // );
+    result.acknowledged && result.deletedCount > 0
+      ? res.status(200).send(true)
+      : res.status(404).send(false);
   } catch (err) {
     res.status(500).send("Error " + err);
   } finally {
@@ -137,20 +128,19 @@ router.delete("/employees", async (req, res) => {
   }
 });
 
-router.get("/employees/:employeeId", async (req, res) => {
+// This end point mostly not using at this time i.e. 30 Jan 2023
+router.get("/employees/:_id", async (req, res) => {
   const client = new MongoClient(uri);
-  const database = "satyas";
-  const collection = "employee";
   try {
     await client.connect();
 
     // TODO : Validations
-    const currentDatabase = client.db(database);
-    const currentCollection = currentDatabase.collection(collection);
-    const currentEmployeeId = Number(req.params.employeeId);
+    const currentDatabase = client.db(DATABASE);
+    const currentCollection = currentDatabase.collection(TABLE);
+    const currentEmployeeId = Number(req.params._id);
 
     const result = await currentCollection.findOne({
-      employeeId: currentEmployeeId,
+      _id: currentEmployeeId,
     });
 
     res
