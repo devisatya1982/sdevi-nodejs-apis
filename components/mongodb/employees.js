@@ -94,12 +94,6 @@ router.patch("/employees", async (req, res) => {
     );
 
     res.status(200).send(result.modifiedCount > 0 ? true : false);
-
-    // res.status(200).send(
-    //   result.modifiedCount > 0
-    //     ? `${currentBody.employeeId} details have been updated successfully!`
-    //     : `No records found with the ${currentBody.employeeId} !`
-    // );
   } catch (err) {
     res.status(500).send("Error " + err);
   } finally {
