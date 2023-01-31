@@ -7,6 +7,7 @@ import moment from "moment";
 
 import mongoDBRouter from "./components/mongodb/databases.js";
 import employeeRouter from "./components/mongodb/employees.js";
+import userRouter from "./components/mongodb/users.js";
 import emailsRouter from "./components/mongodb/emails.js";
 import eventRouter from "./components/mongodb/events.js";
 import authenticationRouter from "./components/authentication/auth-api.js";
@@ -46,6 +47,7 @@ app.use(json());
 app.use("/mongodb", mongoDBRouter);
 app.use("/auth", authenticationRouter);
 app.use("/employee", employeeRouter);
+app.use("/user", userRouter);
 app.use("/event", eventRouter);
 app.use("/email", emailsRouter);
 

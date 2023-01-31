@@ -124,7 +124,7 @@ router.post("/login", async (req, res) => {
 
       currentStatus = {
         token: token,
-        message: "Token generated successfully!, Redirecting to Landing Page!",
+        message: "Token generated successfully!",
         status: true,
         user: {
           email: foundUserData.email,
