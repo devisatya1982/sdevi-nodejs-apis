@@ -80,7 +80,7 @@ router.post("/users", async (req, res) => {
           user: {
             email: newUser.email,
             name: newUser.firstName + " " + newUser.lastName,
-            role: newUser.role,
+            role: newUser.roles,
           },
         };
 
@@ -123,7 +123,7 @@ router.patch("/users", async (req, res) => {
         user: {
           email: currentBody.email,
           name: currentBody.firstName + " " + currentBody.lastName,
-          role: currentBody.role,
+          roles: currentBody.roles,
         },
       };
 

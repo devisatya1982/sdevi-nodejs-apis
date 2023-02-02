@@ -33,7 +33,7 @@ router.post("/signup", async (req, res) => {
     userData._id = Date.now();
     userData.key = Date.now();
     userData.isActivated = false;
-    userData.role = "user";
+    userData.roles = ["user"];
 
     const query = { email: userData.email };
     const foundUserData = await currentCollection.findOne(query);
@@ -95,7 +95,7 @@ router.post("/login", async (req, res) => {
       user: {
         email: "",
         name: "",
-        role: "",
+        roles: [],
       },
     };
 
@@ -129,7 +129,7 @@ router.post("/login", async (req, res) => {
         user: {
           email: foundUserData.email,
           name: foundUserData.firstName + " " + foundUserData.lastName,
-          role: foundUserData.role,
+          roles: foundUserData.roles,
         },
       };
 
