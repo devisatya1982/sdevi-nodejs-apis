@@ -1,5 +1,6 @@
 import { MongoClient } from "mongodb";
 import { Router } from "express";
+import bcrypt from "bcrypt";
 const router = Router();
 
 const uri =
@@ -59,7 +60,7 @@ router.post("/users", async (req, res) => {
     const currentCollection = currentDatabase.collection(TABLE);
     const newUser = req.body;
     newUser._id = Date.now();
-    newUser.key = Date.now();
+    newUser.key = Date.now() + 9999999;
 
     const query = { email: newUser.email };
     const foundUserData = await currentCollection.findOne(query);
@@ -71,7 +72,15 @@ router.post("/users", async (req, res) => {
       };
       res.status(401).send(response);
     } else {
+      //#region Encrypt Password
+      const salt = await bcrypt.genSalt();
+      const hashedPassword = await bcrypt.hash(newUser.password, salt);
+      newUser.password = hashedPassword;
+
+      //#endregion
+
       const insertOneResult = await currentCollection.insertOne(newUser);
+     // const insertOneResult= {};
 
       if (insertOneResult.acknowledged && insertOneResult.insertedId > 0) {
         response = {

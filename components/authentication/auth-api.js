@@ -4,6 +4,7 @@ const router = Router();
 import jwt from "jsonwebtoken";
 import { createTransport } from "nodemailer";
 
+import bcrypt from "bcrypt";
 const { sign } = jwt;
 
 const uri =
@@ -44,6 +45,12 @@ router.post("/signup", async (req, res) => {
       };
       res.status(401).send(currentStatus);
     } else {
+      //#region Encrypt Password
+      const salt = await bcrypt.genSalt();
+      const hashedPassword = await bcrypt.hash(userData.password, salt);
+      userData.password = hashedPassword;
+      //#endregion
+      
       const insertedOneUser = await currentCollection.insertOne(userData);
 
       await emailSender(userData, res, "signup");
@@ -105,20 +112,18 @@ router.post("/login", async (req, res) => {
         status: false,
       };
       res.status(401).send(currentStatus);
-    } else if (foundUserData.password !== userData.password) {
-      currentStatus = {
-        message: "Invalid Password",
-        status: false,
-      };
-      res.status(401).send(currentStatus);
-    } else if (!foundUserData.isActivated) {
+    }
+
+    if (!foundUserData.isActivated) {
       currentStatus = {
         message: "User Must Be Activated",
         status: false,
       };
 
       res.status(401).send(currentStatus);
-    } else {
+    }
+
+    if (await bcrypt.compare(userData.password, foundUserData.password)) {
       let payload = { subject: foundUserData.email };
       let token = sign(payload, "secretKey");
 
@@ -134,6 +139,12 @@ router.post("/login", async (req, res) => {
       };
 
       res.status(200).send(currentStatus);
+    } else {
+      currentStatus = {
+        message: "Invalid Password",
+        status: false,
+      };
+      res.status(401).send(currentStatus);
     }
   } catch (err) {
     res.send("Error => " + err);
@@ -159,8 +170,6 @@ router.post("/activate", async (req, res) => {
 
     if (!foundUserData) {
       res.status(401).send("Invalid Email");
-    } else if (foundUserData.password !== userData.password) {
-      res.status(401).send("Invalid Password");
     } else if (foundUserData.key !== Number(activatedKey)) {
       res.status(401).send("Key is not valid!");
     } else {
