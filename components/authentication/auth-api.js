@@ -102,7 +102,10 @@ router.post("/token", async (req, res) => {
 
 })
 
-
+router.delete('/logout', (req,res)=>{
+  refreshTokens = refreshTokens.filter(token => token !== req.body.token);
+  res.sendStatus(204);
+})
 
 router.post("/login", async (req, res) => {
   const client = new MongoClient(uri);

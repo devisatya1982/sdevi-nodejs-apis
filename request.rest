@@ -18,17 +18,26 @@ Content-Type: application/json
     "password":"test"
 }
 
-### Refresh Token
+### Refresh Token Generate
 
 POST http://localhost:9000/auth/token
 Content-Type: application/json
 
 {
-    "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAZ21haWwuY29tIiwiaWF0IjoxNjc1NTE1NTAzfQ.885RDq7jGwpKmseQ-U6mupth9qPEVmTh8zbV4pifacE"
+    "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAZ21haWwuY29tIiwiaWF0IjoxNjc1NTE2NDgyfQ.lwIyB2n1QvrRrtLO0JI2zgOWUvtRUhwxxv_KL-mX3pg"
 }
 ### For Events
 GET http://localhost:9000/event/events
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NzU1MTU1ODAsImV4cCI6MTY3NTUxNTYxMH0.sb37iVW9N5Ns9bXx12DoDaD9Ux-8h2vP8EIESJDU3eU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NzU1MTY1MTgsImV4cCI6MTY3NTUxNjU0OH0.RH15HcypVoAiegsyxewOWPILVkoNcg3dkNZgRevOOm8
+
+### Logout Remove Refresh Token
+DELETE http://localhost:9000/auth/logout
+Content-Type: application/json
+
+{
+    "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAZ21haWwuY29tIiwiaWF0IjoxNjc1NTE2NDgyfQ.lwIyB2n1QvrRrtLO0JI2zgOWUvtRUhwxxv_KL-mX3pg"
+}
+
 
 ###
 POST http://localhost:9000/user/users
