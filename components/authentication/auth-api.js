@@ -8,7 +8,6 @@ import jwt from "jsonwebtoken";
 import { createTransport } from "nodemailer";
 
 import bcrypt from "bcrypt";
-const { sign } = jwt;
 
 const uri =
   "mongodb+srv://sdevi:test@sdevicluster.wtwtl.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
@@ -84,6 +83,27 @@ router.post("/signup", async (req, res) => {
   }
 });
 
+let refreshTokens = [];
+
+router.post("/token", async (req, res) => {
+  
+  const refreshToken = req.body.token;
+  if(refreshToken === null) return res.sendStatus(401);
+
+  if(!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
+
+  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user)=>{
+    if(err) return res.sendStatus(403)
+
+    const accessToken = generateAccessToken({name: user.name});
+    res.json({accessToken: accessToken})
+
+  })
+
+})
+
+
+
 router.post("/login", async (req, res) => {
   const client = new MongoClient(uri);
 
@@ -127,12 +147,16 @@ router.post("/login", async (req, res) => {
     }
 
     if (await bcrypt.compare(userData.password, foundUserData.password)) {
-      let username = { email: foundUserData.email };
-      let accessToken = sign(username, process.env.ACCESS_TOKEN_SECRET);
+
+      let user = { email: foundUserData.email };
+      const accessToken = generateAccessToken(user);
+      const refreshToken = generateRefreshAccessToken(user);
+      refreshTokens.push(refreshToken);
 
       currentStatus = {
         accessToken: accessToken,
-        message: "Token generated successfully!",
+        refreshToken: refreshToken,
+        message: "Tokens generated successfully!",
         status: true,
         user: {
           email: foundUserData.email,
@@ -307,4 +331,13 @@ async function emailSender(userData, res, typeOfEmail) {
       res.status(200).send(`New Email has been sent! ==> ${info.response}`);
     }
   });
+}
+
+
+const generateAccessToken =(user)=>{
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '30s'});  // 10m
+}
+
+const generateRefreshAccessToken = (user)=>{
+  return jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
 }

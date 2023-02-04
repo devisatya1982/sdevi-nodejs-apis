@@ -18,9 +18,17 @@ Content-Type: application/json
     "password":"test"
 }
 
+### Refresh Token
+
+POST http://localhost:9000/auth/token
+Content-Type: application/json
+
+{
+    "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAZ21haWwuY29tIiwiaWF0IjoxNjc1NTE1NTAzfQ.885RDq7jGwpKmseQ-U6mupth9qPEVmTh8zbV4pifacE"
+}
 ### For Events
 GET http://localhost:9000/event/events
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ0.eyJlbWFpbCI6InVzZXJAZ21haWwuY29tIiwiaWF0IjoxNjc1NTEyMzIyfQ.xsNG9pXfD4c_w-51AdDfpLj2bW4qM15hj_CZsukDN8k
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NzU1MTU1ODAsImV4cCI6MTY3NTUxNTYxMH0.sb37iVW9N5Ns9bXx12DoDaD9Ux-8h2vP8EIESJDU3eU
 
 ###
 POST http://localhost:9000/user/users
