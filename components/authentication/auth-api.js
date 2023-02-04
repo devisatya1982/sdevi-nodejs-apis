@@ -55,22 +55,16 @@ router.post("/signup", async (req, res) => {
       //#endregion
 
       const insertedOneUser = await currentCollection.insertOne(userData);
-
       await emailSender(userData, res, "signup");
 
-      let currentStatus = {
-        message: "",
-        status: false,
-      };
-
       if (insertedOneUser.acknowledged && insertedOneUser.insertedId > 0) {
-        currentStatus = {
+       const currentStatus = {
           message: `Please Activate Your Account With the Key Sent to your registered email : ${userData.email}`,
           status: true,
         };
         res.status(200).send(currentStatus);
       } else {
-        currentStatus = {
+        const currentStatus = {
           message: "User Not Registered Properly!",
           status: false,
         };
@@ -92,19 +86,36 @@ router.post("/token", async (req, res) => {
   try {
     await client.connect();
     const currentDatabase = client.db(DATABASE);
-    const currentCollectionTokens =
-      currentDatabase.collection(COLLECTION_TOKENS);
+    const currentCollectionTokens = currentDatabase.collection(COLLECTION_TOKENS);
 
     const query = { email: req.body.email };
     const foundUserData = await currentCollectionTokens.findOne(query);
 
-    if (foundUserData === null) return res.sendStatus(401);
-    if (!foundUserData.refreshToken) return res.sendStatus(403);
+    if (foundUserData === null) {
+      const currentStatus = {
+        message: "No Data found with your account!",
+        status: false,
+      };
+      return res.status(404).send(currentStatus);
+    }
+    if (!foundUserData.refreshToken) {
+      const currentStatus = {
+        message: "No Refresh Token found with your account!",
+        status: false,
+      };
+      return res.status(404).send(currentStatus);
+    }
 
     const refreshToken = foundUserData.refreshToken;
 
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-      if (err) return res.sendStatus(403);
+      if (err) {
+        const currentStatus = {
+          message: "Refresh Token Invalid!",
+          status: false,
+        };
+        return res.status(403).send(currentStatus);
+      }
 
       const accessToken = generateAccessToken({ name: user.name });
 
@@ -128,11 +139,8 @@ router.delete("/logout", async (req, res) => {
   try {
     await client.connect();
     const currentDatabase = client.db(DATABASE);
-    const currentCollectionTokens =
-      currentDatabase.collection(COLLECTION_TOKENS);
-
+    const currentCollectionTokens = currentDatabase.collection(COLLECTION_TOKENS);
     const query = { email: req.body.email };
-
     const result = await currentCollectionTokens.deleteMany(query);
 
     if (result.acknowledged && result.deletedCount > 0) {
@@ -287,23 +295,21 @@ router.post("/activate", async (req, res) => {
         { $set: foundUserData }
       );
 
-      const currentStatusSuccess = {
-        message: "User Activated, Redirecting to Login Page",
-        status: true,
-      };
+      if (updatedOneResult.acknowledged && updatedOneResult.modifiedCount > 0) {
+        const currentStatus = {
+          message: "User Activated, Redirecting to Login Page",
+          status: true,
+        };
 
-      const currentStatusNotSuccess = {
-        message: "User Not Activated!",
-        status: false,
-      };
+        res.status(200).send(currentStatus);
+      } else {
+        const currentStatus = {
+          message: "User Not Activated!",
+          status: false,
+        };
 
-      res
-        .status(200)
-        .send(
-          updatedOneResult.modifiedCount > 0
-            ? currentStatusSuccess
-            : currentStatusNotSuccess
-        );
+        res.status(200).send(currentStatus);
+      }
     } else {
       const currentStatus = {
         message: "Invalid Password",
@@ -332,22 +338,22 @@ router.post("/forgotpwd", async (req, res) => {
     const query = { email: userData.email };
     const foundUserData = await currentCollection.findOne(query);
 
-    let currentStatusNotSuccess = {
-      message: `Email : ${userData.email} not found`,
-      status: false,
-    };
-
     if (!foundUserData) {
-      res.status(401).send(currentStatusNotSuccess);
+      const currentStatus = {
+        message: `Email : ${userData.email} not found`,
+        status: true,
+      };
+
+      res.status(401).send(currentStatus);
     } else {
       await emailSender(foundUserData, res, "forgotpwd");
 
-      let currentStatusSuccess = {
+      const currentStatus = {
         message: `Your password has been sent to your registered email : ${foundUserData?.email}`,
         status: true,
       };
 
-      res.status(200).send(currentStatusSuccess);
+      res.status(200).send(currentStatus);
     }
   } catch (err) {
     res.send("Error => " + err);

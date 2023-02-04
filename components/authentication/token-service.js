@@ -12,13 +12,18 @@ const verifyToken = (req, res, next) => {
   if (token === "null") {
     return res.status(401).send(unAuthorizedRequest);
   }
-  // let payload = jwt.sign({ myToken: token }, secretOrPrivateKey);
 
   // let checkForNull = jwt.decode(token);
   // Above line do the same like below logic
   jwt.verify(token, secretOrPrivateKey,   (error, user)=> {
-    if (error) return res.sendStatus(403);
-    
+    if (error){
+      const currentStatus = {
+        message: `Invalid Token`,
+        status: false,
+      };
+  
+      res.status(403).send(currentStatus);
+    }   
 
     try {
       req.user = user;
