@@ -53,4 +53,4 @@ Thumbs.db
 /package-lock.json
 
 #environment file
-.env
+# .env
