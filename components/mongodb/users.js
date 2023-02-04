@@ -76,11 +76,9 @@ router.post("/users", async (req, res) => {
       const salt = await bcrypt.genSalt();
       const hashedPassword = await bcrypt.hash(newUser.password, salt);
       newUser.password = hashedPassword;
-
       //#endregion
 
       const insertOneResult = await currentCollection.insertOne(newUser);
-     // const insertOneResult= {};
 
       if (insertOneResult.acknowledged && insertOneResult.insertedId > 0) {
         response = {
@@ -89,7 +87,7 @@ router.post("/users", async (req, res) => {
           user: {
             email: newUser.email,
             name: newUser.firstName + " " + newUser.lastName,
-            role: newUser.roles,
+            role: newUser.role,
           },
         };
 
@@ -132,7 +130,7 @@ router.patch("/users", async (req, res) => {
         user: {
           email: currentBody.email,
           name: currentBody.firstName + " " + currentBody.lastName,
-          roles: currentBody.roles,
+          role: currentBody.role,
         },
       };
 

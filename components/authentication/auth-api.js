@@ -34,7 +34,7 @@ router.post("/signup", async (req, res) => {
     userData._id = Date.now();
     userData.key = Date.now();
     userData.isActivated = false;
-    userData.roles = ["user"];
+    userData.role = "user";
 
     const query = { email: userData.email };
     const foundUserData = await currentCollection.findOne(query);
@@ -102,7 +102,7 @@ router.post("/login", async (req, res) => {
       user: {
         email: "",
         name: "",
-        roles: [],
+        role: "",
       },
     };
 
@@ -134,7 +134,7 @@ router.post("/login", async (req, res) => {
         user: {
           email: foundUserData.email,
           name: foundUserData.firstName + " " + foundUserData.lastName,
-          roles: foundUserData.roles,
+          role: foundUserData.role,
         },
       };
 
@@ -169,42 +169,64 @@ router.post("/activate", async (req, res) => {
     const foundUserData = await currentCollection.findOne(query);
 
     if (!foundUserData) {
-      res.status(401).send("Invalid Email");
-    } else if (foundUserData.key !== Number(activatedKey)) {
-      res.status(401).send("Key is not valid!");
-    } else {
-      let currentStatusSuccess = {
-        message: "User Already Activated!, Redirecting to Login Page",
+     const currentStatus = {
+        message: "Invalid Email",
+        status: false,
+      };
+      res.status(401).send(currentStatus);
+    }
+
+    if (await bcrypt.compare(userData.password, foundUserData.password)) {
+      
+      if (foundUserData.key !== Number(activatedKey)) {
+        const currentStatus = {
+          message: "Key is Invalid",
+          status: false,
+        };
+        res.status(401).send(currentStatus);
+      }
+      
+      if (foundUserData.isActivated) {
+        const currentStatus = {
+          message: "User Already Activated!, Redirecting to Login Page",
+          status: true,
+        };
+  
+        res.status(200).send(currentStatus);
+      } 
+
+      foundUserData.isActivated = true;
+      const updatedOneResult = await currentCollection.updateOne(
+        { _id: foundUserData._id },
+        { $set: foundUserData }
+      );
+
+      const currentStatusSuccess = {
+        message: "User Activated, Redirecting to Login Page",
         status: true,
       };
 
-      let currentStatusNotSuccess = {
+      const currentStatusNotSuccess = {
         message: "User Not Activated!",
         status: false,
       };
 
-      if (foundUserData.isActivated) {
-        res.status(200).send(currentStatusSuccess);
-      } else {
-        foundUserData.isActivated = true;
-        const updatedOneResult = await currentCollection.updateOne(
-          { _id: foundUserData._id },
-          { $set: foundUserData }
+      res
+        .status(200)
+        .send(
+          updatedOneResult.modifiedCount > 0
+            ? currentStatusSuccess
+            : currentStatusNotSuccess
         );
-        currentStatusSuccess = {
-          message: "User Activated, Redirecting to Login Page",
-          status: true,
-        };
 
-        res
-          .status(200)
-          .send(
-            updatedOneResult.modifiedCount > 0
-              ? currentStatusSuccess
-              : currentStatusNotSuccess
-          );
-      }
+    } else {
+     const currentStatus = {
+        message: "Invalid Password",
+        status: false,
+      };
+      res.status(401).send(currentStatus);
     }
+
   } catch (err) {
     res.send("Error => " + err);
   } finally {
