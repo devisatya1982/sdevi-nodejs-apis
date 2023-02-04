@@ -1,10 +1,9 @@
 import jwt from "jsonwebtoken";
 
 const verifyToken = (req, res, next) => {
-  const secretOrPrivateKey = "secretKey";
+  const secretOrPrivateKey = process.env.ACCESS_TOKEN_SECRET;
   const unAuthorizedRequest = "Unauthorized request";
-  const jsonWebTokenError = "invalid token";
-
+ 
   if (!req.headers.authorization) {
     return res.status(401).send(unAuthorizedRequest);
   }
@@ -13,17 +12,16 @@ const verifyToken = (req, res, next) => {
   if (token === "null") {
     return res.status(401).send(unAuthorizedRequest);
   }
-  let payload = jwt.sign({ myToken: token }, secretOrPrivateKey);
+  // let payload = jwt.sign({ myToken: token }, secretOrPrivateKey);
 
   // let checkForNull = jwt.decode(token);
   // Above line do the same like below logic
-  jwt.verify(token, secretOrPrivateKey, function (errDecoded, decoded) {
-    if (errDecoded) {
-      return res.status(401).send(jsonWebTokenError);
-    }
+  jwt.verify(token, secretOrPrivateKey,   (error, user)=> {
+    if (error) return res.sendStatus(403);
+    
 
     try {
-      req.userId = payload.subject;
+      req.user = user;
       next();
     } catch (err) {
       console.log(err);

@@ -14,9 +14,13 @@ POST http://localhost:9000/auth/login
 Content-Type: application/json
 
 {
-    "email":"temp1@gmail.com",
-    "password":"test"    
+    "email":"user@gmail.com",
+    "password":"test"
 }
+
+### For Events
+GET http://localhost:9000/event/events
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ0.eyJlbWFpbCI6InVzZXJAZ21haWwuY29tIiwiaWF0IjoxNjc1NTEyMzIyfQ.xsNG9pXfD4c_w-51AdDfpLj2bW4qM15hj_CZsukDN8k
 
 ###
 POST http://localhost:9000/user/users
@@ -27,6 +31,6 @@ Content-Type: application/json
     "lastName": "Dev1",
     "email": "temp1@gmail.com",
     "password": "test",
-    "roles": ["editor"],
+    "role": "editor",
     "isActivated": true
 }

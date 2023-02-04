@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+dotenv.config()
+
 import { MongoClient } from "mongodb";
 import { Router } from "express";
 const router = Router();
@@ -96,7 +99,7 @@ router.post("/login", async (req, res) => {
     const foundUserData = await currentCollection.findOne(query);
 
     let currentStatus = {
-      token: "",
+      accessToken: "",
       message: "",
       status: false,
       user: {
@@ -124,11 +127,11 @@ router.post("/login", async (req, res) => {
     }
 
     if (await bcrypt.compare(userData.password, foundUserData.password)) {
-      let payload = { subject: foundUserData.email };
-      let token = sign(payload, "secretKey");
+      let username = { email: foundUserData.email };
+      let accessToken = sign(username, process.env.ACCESS_TOKEN_SECRET);
 
       currentStatus = {
-        token: token,
+        accessToken: accessToken,
         message: "Token generated successfully!",
         status: true,
         user: {
