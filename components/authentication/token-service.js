@@ -22,7 +22,7 @@ const verifyToken = (req, res, next) => {
         status: false,
       };
   
-      res.status(403).send(currentStatus);
+     return res.status(403).send(currentStatus);
     }   
 
     try {
