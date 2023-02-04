@@ -1,5 +1,5 @@
-import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
-dotenv.config()
+import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+dotenv.config();
 
 import { MongoClient } from "mongodb";
 import { Router } from "express";
@@ -12,7 +12,8 @@ import bcrypt from "bcrypt";
 const uri =
   "mongodb+srv://sdevi:test@sdevicluster.wtwtl.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 const DATABASE = "satyas";
-const TABLE = "user";
+const COLLECTION_USER = "user";
+const COLLECTION_TOKENS = "tokens";
 
 router.get("/", async (req, res) => {
   try {
@@ -30,7 +31,7 @@ router.post("/signup", async (req, res) => {
 
     // TODO : Validations
     const currentDatabase = client.db(DATABASE);
-    const currentCollection = currentDatabase.collection(TABLE);
+    const currentCollection = currentDatabase.collection(COLLECTION_USER);
 
     const userData = req.body;
     userData._id = Date.now();
@@ -52,7 +53,7 @@ router.post("/signup", async (req, res) => {
       const hashedPassword = await bcrypt.hash(userData.password, salt);
       userData.password = hashedPassword;
       //#endregion
-      
+
       const insertedOneUser = await currentCollection.insertOne(userData);
 
       await emailSender(userData, res, "signup");
@@ -86,26 +87,73 @@ router.post("/signup", async (req, res) => {
 let refreshTokens = [];
 
 router.post("/token", async (req, res) => {
-  
-  const refreshToken = req.body.token;
-  if(refreshToken === null) return res.sendStatus(401);
+  const client = new MongoClient(uri);
 
-  if(!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
+  try {
+    await client.connect();
+    const currentDatabase = client.db(DATABASE);
+    const currentCollectionTokens =
+      currentDatabase.collection(COLLECTION_TOKENS);
 
-  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user)=>{
-    if(err) return res.sendStatus(403)
+    const query = { email: req.body.email };
+    const foundUserData = await currentCollectionTokens.findOne(query);
 
-    const accessToken = generateAccessToken({name: user.name});
-    res.json({accessToken: accessToken})
+    if (foundUserData === null) return res.sendStatus(401);
+    if (!foundUserData.refreshToken) return res.sendStatus(403);
 
-  })
+    const refreshToken = foundUserData.refreshToken;
 
-})
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+      if (err) return res.sendStatus(403);
 
-router.delete('/logout', (req,res)=>{
-  refreshTokens = refreshTokens.filter(token => token !== req.body.token);
-  res.sendStatus(204);
-})
+      const accessToken = generateAccessToken({ name: user.name });
+
+      const currentStatus = {
+        accessToken: accessToken,
+        message: "Access Token has been generated successfully!",
+        status: true,
+      };
+      res.status(200).send(currentStatus);
+    });
+  } catch (err) {
+    res.send("Error => " + err);
+  } finally {
+    await client.close();
+  }
+});
+
+router.delete("/logout", async (req, res) => {
+  const client = new MongoClient(uri);
+
+  try {
+    await client.connect();
+    const currentDatabase = client.db(DATABASE);
+    const currentCollectionTokens =
+      currentDatabase.collection(COLLECTION_TOKENS);
+
+    const query = { email: req.body.email };
+
+    const result = await currentCollectionTokens.deleteMany(query);
+
+    if (result.acknowledged && result.deletedCount > 0) {
+      const currentStatus = {
+        message: "Logged out || Refresh Token has been removed successfully!",
+        status: true,
+      };
+      res.status(200).send(currentStatus);
+    } else {
+      const currentStatus = {
+        message: "Not Properly Logged out!",
+        status: false,
+      };
+      res.status(404).send(currentStatus);
+    }
+  } catch (err) {
+    res.send("Error => " + err);
+  } finally {
+    await client.close();
+  }
+});
 
 router.post("/login", async (req, res) => {
   const client = new MongoClient(uri);
@@ -115,7 +163,11 @@ router.post("/login", async (req, res) => {
 
     // TODO : Validations
     const currentDatabase = client.db(DATABASE);
-    const currentCollection = currentDatabase.collection(TABLE);
+    const currentCollection = currentDatabase.collection(COLLECTION_USER);
+
+    const currentCollectionTokens =
+      currentDatabase.collection(COLLECTION_TOKENS);
+
     const userData = req.body;
 
     const query = { email: userData.email };
@@ -150,11 +202,16 @@ router.post("/login", async (req, res) => {
     }
 
     if (await bcrypt.compare(userData.password, foundUserData.password)) {
-
       let user = { email: foundUserData.email };
       const accessToken = generateAccessToken(user);
       const refreshToken = generateRefreshAccessToken(user);
-      refreshTokens.push(refreshToken);
+
+      const refreshTokenData = {
+        email: foundUserData.email,
+        refreshToken: refreshToken,
+      };
+
+      await currentCollectionTokens.insertOne(refreshTokenData);
 
       currentStatus = {
         accessToken: accessToken,
@@ -191,7 +248,7 @@ router.post("/activate", async (req, res) => {
 
     // TODO : Validations
     const currentDatabase = client.db(DATABASE);
-    const currentCollection = currentDatabase.collection(TABLE);
+    const currentCollection = currentDatabase.collection(COLLECTION_USER);
     const userData = req.body;
     const activatedKey = req.body.key;
 
@@ -199,7 +256,7 @@ router.post("/activate", async (req, res) => {
     const foundUserData = await currentCollection.findOne(query);
 
     if (!foundUserData) {
-     const currentStatus = {
+      const currentStatus = {
         message: "Invalid Email",
         status: false,
       };
@@ -207,7 +264,6 @@ router.post("/activate", async (req, res) => {
     }
 
     if (await bcrypt.compare(userData.password, foundUserData.password)) {
-      
       if (foundUserData.key !== Number(activatedKey)) {
         const currentStatus = {
           message: "Key is Invalid",
@@ -215,15 +271,15 @@ router.post("/activate", async (req, res) => {
         };
         res.status(401).send(currentStatus);
       }
-      
+
       if (foundUserData.isActivated) {
         const currentStatus = {
           message: "User Already Activated!, Redirecting to Login Page",
           status: true,
         };
-  
+
         res.status(200).send(currentStatus);
-      } 
+      }
 
       foundUserData.isActivated = true;
       const updatedOneResult = await currentCollection.updateOne(
@@ -248,15 +304,13 @@ router.post("/activate", async (req, res) => {
             ? currentStatusSuccess
             : currentStatusNotSuccess
         );
-
     } else {
-     const currentStatus = {
+      const currentStatus = {
         message: "Invalid Password",
         status: false,
       };
       res.status(401).send(currentStatus);
     }
-
   } catch (err) {
     res.send("Error => " + err);
   } finally {
@@ -272,7 +326,7 @@ router.post("/forgotpwd", async (req, res) => {
 
     // TODO : Validations
     const currentDatabase = client.db(DATABASE);
-    const currentCollection = currentDatabase.collection(TABLE);
+    const currentCollection = currentDatabase.collection(COLLECTION_USER);
     const userData = req.body;
 
     const query = { email: userData.email };
@@ -336,11 +390,10 @@ async function emailSender(userData, res, typeOfEmail) {
   });
 }
 
+const generateAccessToken = (user) => {
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "45s" }); // 10m
+};
 
-const generateAccessToken =(user)=>{
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '30s'});  // 10m
-}
-
-const generateRefreshAccessToken = (user)=>{
+const generateRefreshAccessToken = (user) => {
   return jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
-}
+};

@@ -2,13 +2,13 @@ POST http://localhost:9000/auth/signup
 Content-Type: application/json
 
 {
-    "firstName":"one",
-    "lastName":"demo",
-    "email":"one@gmail.com",
+    "firstName":"user",
+    "lastName":"account",
+    "email":"user@gmail.com",
     "password":"test"    
 }
 
-###
+### Sign In
 
 POST http://localhost:9000/auth/login
 Content-Type: application/json
@@ -24,17 +24,19 @@ POST http://localhost:9000/auth/token
 Content-Type: application/json
 
 {
-    "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAZ21haWwuY29tIiwiaWF0IjoxNjc1NTE2NDgyfQ.lwIyB2n1QvrRrtLO0JI2zgOWUvtRUhwxxv_KL-mX3pg"
+    "email":"user@gmail.com",
+    "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAZ21haWwuY29tIiwiaWF0IjoxNjc1NTIzMTUzfQ.0QFBV-8PnxUEyIFl539or3TDlGj5WxnFyLBfWVaCyzs"
 }
 ### For Events
 GET http://localhost:9000/event/events
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NzU1MTY1MTgsImV4cCI6MTY3NTUxNjU0OH0.RH15HcypVoAiegsyxewOWPILVkoNcg3dkNZgRevOOm8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NzU1MjQxODMsImV4cCI6MTY3NTUyNDIyOH0.nQi9nMBWLk_WifpXtPMl0iSDk5GGrkRgaCA93hjEL8U
 
 ### Logout Remove Refresh Token
 DELETE http://localhost:9000/auth/logout
 Content-Type: application/json
 
 {
+    "email":"user@gmail.com",
     "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAZ21haWwuY29tIiwiaWF0IjoxNjc1NTE2NDgyfQ.lwIyB2n1QvrRrtLO0JI2zgOWUvtRUhwxxv_KL-mX3pg"
 }
 

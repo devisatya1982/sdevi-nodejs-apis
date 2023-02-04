@@ -98,7 +98,7 @@ router.post("/users", async (req, res) => {
           status: false,
           user: {},
         };
-        res.status(204).send(response);
+        res.status(404).send(response);
       }
     }
   } catch (err) {
