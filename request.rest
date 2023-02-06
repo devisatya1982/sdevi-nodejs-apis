@@ -1,3 +1,25 @@
+
+
+POST http://localhost:9000/register
+Content-Type: application/json
+
+{
+    "firstName":"user",
+    "lastName":"account",
+    "email":"user2@gmail.com",
+    "password":"test"       
+}
+
+### Login
+POST http://localhost:9000/auth
+Content-Type: application/json
+
+{
+    "user":"user@gmail.com",
+    "pwd":"test"    
+}
+
+### Existing Endpoints Starts from here
 POST http://localhost:9000/auth/signup
 Content-Type: application/json
 

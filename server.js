@@ -70,13 +70,13 @@ app.use('/users', usersRouter);
 
 // app.use(json());
 
-app.use("/mongodb", mongoDBRouter);
-// app.use("/auth", authenticationRouter);
-app.use("/employee", employeeRouter);
-app.use("/user", userRouter);
-app.use("/event", eventRouter);
-app.use("/email", emailsRouter);
-app.use("/marvels", marvelsRouter);
+// app.use("/mongodb", mongoDBRouter);
+// // app.use("/auth", authenticationRouter);
+// app.use("/employee", employeeRouter);
+// app.use("/user", userRouter);
+// app.use("/event", eventRouter);
+// app.use("/email", emailsRouter);
+// app.use("/marvels", marvelsRouter);
 
 
 

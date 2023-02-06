@@ -2,9 +2,33 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-    username: {
+    _id: {
+        type: Number,
+        required: true
+    },
+    firstName: {
         type: String,
         required: true
+    },
+    lastName: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true
+    },
+    password: {
+        type: String,
+        required: true
+    },
+    activatedKey: {
+        type: Number,
+        required: true
+    },
+    isActivated: {
+        type: Boolean,
+        required: false
     },
     roles: {
         User: {
@@ -14,10 +38,7 @@ const userSchema = new Schema({
         Editor: Number,
         Admin: Number
     },
-    password: {
-        type: String,
-        required: true
-    },
+   
     refreshToken: [String]
 });
 

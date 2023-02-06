@@ -1,26 +1,36 @@
 import User from '../model/User.js';
+import bcrypt from "bcrypt";
 
 const handleNewUser = async (req, res) => {
-    const { user, pwd } = req.body;
-    if (!user || !pwd) return res.status(400).json({ 'message': 'Username and password are required.' });
+    const userData = req.body;
+
+    const { email, password } = userData;
+    if (!email || !password) return res.status(400).json({ 'message': 'Username and password are required.' });
 
     // check for duplicate usernames in the db
-    const duplicate = await User.findOne({ username: user }).exec();
+    const duplicate = await User.findOne({ email: email }).exec();
     if (duplicate) return res.sendStatus(409); //Conflict 
 
     try {
         //encrypt the password
-        const hashedPwd = await bcrypt.hash(pwd, 10);
+        const encryptedPwd = await bcrypt.hash(password, 10);
+        userData._id = Date.now();
+        userData.activatedKey = Date.now() * 5;
+        userData.isActivated = false;
 
-        //create and store the new user
+        //create and store the new email
         const result = await User.create({
-            "username": user,
-            "password": hashedPwd
+            "_id":Date.now(),
+            "firstName":userData.firstName,
+            "lastName":userData.lastName,
+            "email": userData.email,
+            "password": encryptedPwd,
+            "activatedKey":userData.activatedKey
         });
 
         console.log(result);
 
-        res.status(201).json({ 'success': `New user ${user} created!` });
+        res.status(201).json({ 'success': `New email ${email} created! & please activate with the activation key sent to your email` });
     } catch (err) {
         res.status(500).json({ 'message': err.message });
     }
