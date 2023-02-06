@@ -19,7 +19,21 @@ Content-Type: application/json
     "password":"test"    
 }
 
-### Refresh Token
+
+###
+POST http://localhost:9000/users
+Content-Type: application/json
+
+{
+    "firstName": "Sat1",
+    "lastName": "Dev1",
+    "email": "temp1@gmail.com",
+    "password": "test",
+    "role": "editor",
+    "isActivated": true
+}
+
+### Refresh Token (NOT WORKING AT THE MOMENT 6:28 PM 06 FEB 2023)
 POST http://localhost:9000/refresh
 Content-Type: application/json
 

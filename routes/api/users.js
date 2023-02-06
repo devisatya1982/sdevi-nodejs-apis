@@ -6,10 +6,9 @@ import verifyRoles from '../../middleware/verifyRoles.js';
 
 router.route('/')
     .get(usersController.getAllUsers)
+    .post(usersController.addUser)
+    .patch(usersController.updateUser)
     //.get(verifyRoles(ROLES_LIST.Admin), usersController.getAllUsers)
-    .delete(verifyRoles(ROLES_LIST.Admin), usersController.deleteUser);
-
-router.route('/:id')
-    .get(verifyRoles(ROLES_LIST.Admin), usersController.getUser);
+    .delete(usersController.deleteUser);
 
 export default router;

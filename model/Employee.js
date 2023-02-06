@@ -2,12 +2,16 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const employeeSchema = new Schema({
-    firstname: {
+    _id: {
+        type: Number,
+        required: true
+    },
+    employeeName: {
         type: String,
         required: true
     },
-    lastname: {
-        type: String,
+    employeeSal: {
+        type: Number,
         required: true
     }
 });

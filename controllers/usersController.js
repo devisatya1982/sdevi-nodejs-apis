@@ -1,19 +1,98 @@
 import User from '../model/User.js';
+import bcrypt from "bcrypt";
 
 const getAllUsers = async (req, res) => {
-    const users = await User.find();
-    if (!users) return res.status(204).json({ 'message': 'No users found' });
+  try {
+    const users = User.find();
+    if (!users) return res.status(204).json({ message: "No users found" });
     res.json(users);
-}
+  } catch (err) {
+    res.status(500).send("Error " + err);
+  }
+};
+
+const addUser = async (req, res) => {
+  try {
+    const newUser = req.body;
+    newUser.key = Date.now() + 9999999;
+
+    // check for duplicate usernames in the db
+    const duplicate = await User.findOne({ email: newUser.email }).exec();
+    if (duplicate) return res.sendStatus(409); //Conflict
+
+    //encrypt the password
+    const salt = await bcrypt.genSalt();
+
+    const encryptedPwd = await bcrypt.hash(newUser.password, salt);
+
+    //create and store the new email
+    const result = await User.create({
+        "_id":Date.now(),
+        "firstName":newUser.firstName,
+        "lastName":newUser.lastName,
+        "email": newUser.email,
+        "password": encryptedPwd,
+        "activationKey":newUser.activationKey,
+        "isActivated":newUser.isActivated,
+        "role": newUser.role
+    });
+
+    console.log(result);
+
+    res.status(201).json({success: `New email ${email} created!`});
+  } catch (err) {
+    res.status(500).send("Error " + err);
+  }
+};
+
+const updateUser = async (req, res) => {
+    try {
+      const currentUser = req.body;
+
+
+      if (!currentUser._id) {
+          return res.status(400).json({ 'message': 'ID parameter is required.' });
+      }
+  
+      const user = await User.findOne({ _id: currentUser._id }).exec();
+      if (!user) {
+          return res.status(204).json({ "message": `No user matches ID ${currentUser._id}.` });
+      }
+
+      if (currentUser.firstName) user.firstName = currentUser.firstName;
+      if (currentUser.lastName) user.lastName = currentUser.lastName;
+
+      if (currentUser.email) user.email = currentUser.email;
+      if (currentUser.activationKey) user.activationKey = currentUser.activationKey;
+      if (currentUser.isActivated) user.isActivated = currentUser.isActivated;
+      if (currentUser.role) user.role = currentUser.role;
+  
+      const result = await user.save();
+  
+      res.json(result);
+    } catch (err) {
+      res.status(500).send("Error " + err);
+    }
+  };
 
 const deleteUser = async (req, res) => {
-    if (!req?.body?.id) return res.status(400).json({ "message": 'User ID required' });
-    const user = await User.findOne({ _id: req.body.id }).exec();
-    if (!user) {
-        return res.status(204).json({ 'message': `User ID ${req.body.id} not found` });
-    }
-    const result = await user.deleteOne({ _id: req.body.id });
-    res.json(result);
+    try {
+        const currentUserId = Number(req.params._id);
+
+        if (!currentUserId) return res.status(400).json({ "message": 'User ID required' });
+    
+        const user = await User.findOne({ _id: currentUserId }).exec();
+    
+        if (!user) {
+            return res.status(204).json({ 'message': `User ID ${currentUserId} not found` });
+        }
+    
+        const result = await user.deleteOne({ _id: currentUserId });
+        res.json(result);
+        
+    } catch (err) {
+        res.status(500).send("Error " + err);
+    }   
 }
 
 const getUser = async (req, res) => {
@@ -27,6 +106,7 @@ const getUser = async (req, res) => {
 
 export default {
     getAllUsers,
-    deleteUser,
-    getUser
+    addUser,
+    updateUser,
+    deleteUser
 }
