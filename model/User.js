@@ -22,7 +22,7 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    activatedKey: {
+    activationKey: {
         type: Number,
         required: true
     },

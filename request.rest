@@ -6,7 +6,7 @@ Content-Type: application/json
 {
     "firstName":"user",
     "lastName":"account",
-    "email":"user2@gmail.com",
+    "email":"user@gmail.com",
     "password":"test"       
 }
 
@@ -15,9 +15,21 @@ POST http://localhost:9000/auth
 Content-Type: application/json
 
 {
-    "user":"user@gmail.com",
-    "pwd":"test"    
+    "email":"user@gmail.com",
+    "password":"test"    
 }
+
+### Refresh Token
+POST http://localhost:9000/refresh
+Content-Type: application/json
+
+{
+    "email":"user@gmail.com",
+    "password":"test"    
+}
+
+
+
 
 ### Existing Endpoints Starts from here
 POST http://localhost:9000/auth/signup

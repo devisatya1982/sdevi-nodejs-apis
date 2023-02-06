@@ -13,9 +13,10 @@ const handleNewUser = async (req, res) => {
 
     try {
         //encrypt the password
-        const encryptedPwd = await bcrypt.hash(password, 10);
+        const salt = await bcrypt.genSalt();
+        const encryptedPwd = await bcrypt.hash(password, salt);
         userData._id = Date.now();
-        userData.activatedKey = Date.now() * 5;
+        userData.activationKey = Date.now() * 5;
         userData.isActivated = false;
 
         //create and store the new email
@@ -25,7 +26,8 @@ const handleNewUser = async (req, res) => {
             "lastName":userData.lastName,
             "email": userData.email,
             "password": encryptedPwd,
-            "activatedKey":userData.activatedKey
+            "activationKey":userData.activationKey,
+            "isActivated":false
         });
 
         console.log(result);
