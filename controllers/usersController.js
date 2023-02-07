@@ -34,7 +34,7 @@ const addUser = async (req, res) => {
         "password": encryptedPwd,
         "activationKey":newUser.activationKey,
         "isActivated":newUser.isActivated,
-        "role": newUser.role
+        "roles": newUser.roles
     });
 
     console.log(result);
@@ -65,7 +65,7 @@ const updateUser = async (req, res) => {
       if (currentUser.email) user.email = currentUser.email;
       if (currentUser.activationKey) user.activationKey = currentUser.activationKey;
       if (currentUser.isActivated) user.isActivated = currentUser.isActivated;
-      if (currentUser.role) user.role = currentUser.role;
+      if (currentUser.roles) user.roles = currentUser.roles;
   
       const result = await user.save();
   

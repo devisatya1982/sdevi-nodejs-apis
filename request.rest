@@ -29,7 +29,7 @@ Content-Type: application/json
     "lastName": "Dev1",
     "email": "temp1@gmail.com",
     "password": "test",
-    "role": "editor",
+    "roles": {"editor": 2000},
     "isActivated": true
 }
 
@@ -98,6 +98,6 @@ Content-Type: application/json
     "lastName": "Dev1",
     "email": "temp1@gmail.com",
     "password": "test",
-    "role": "editor",
+    "roles": "editor",
     "isActivated": true
 }

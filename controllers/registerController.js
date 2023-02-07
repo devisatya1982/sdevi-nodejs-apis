@@ -27,7 +27,7 @@ const handleNewUser = async (req, res) => {
             "password": encryptedPwd,
             "activationKey":newUser.activationKey,
             "isActivated":false,
-            "role": 'user'
+            "roles": 'user'
         });
 
         console.log(result);

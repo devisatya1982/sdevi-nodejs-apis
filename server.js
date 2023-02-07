@@ -5,13 +5,13 @@ const app = express();
 import {join, dirname} from 'path';
 import moment from "moment";
 
-import mongoDBRouter from "./components/mongodb/databases.js";
-import employeeRouter from "./components/mongodb/employees.js";
-import userRouter from "./components/mongodb/users.js";
-import emailsRouter from "./components/mongodb/emails.js";
-import eventRouter from "./components/mongodb/events.js";
-import marvelsRouter from "./components/combination/marvelAPI.js";
-import authenticationRouter from "./components/authentication/auth-api.js";
+// import mongoDBRouter from "./components/mongodb/databases.js";
+// import employeeRouter from "./components/mongodb/employees.js";
+// import userRouter from "./components/mongodb/users.js";
+// import emailsRouter from "./components/mongodb/emails.js";
+// import eventRouter from "./components/mongodb/events.js";
+// import marvelsRouter from "./components/combination/marvelAPI.js";
+// import authenticationRouter from "./components/authentication/auth-api.js";
 
 import corsOptions from "./config/corsOptions.js"
 import { logger } from "./middleware/logEvents.js"

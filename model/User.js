@@ -30,9 +30,13 @@ const userSchema = new Schema({
         type: Boolean,
         required: false
     },
-    role: {
-        type: String,
-        required: true
+    roles: {
+        User: {
+            type: Number,
+            default: 2001
+        },
+        Editor: Number,
+        Admin: Number
     },
    
     refreshToken: [String]
