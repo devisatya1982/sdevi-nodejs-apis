@@ -1,6 +1,8 @@
 import express, { json } from "express";
 import cors from "cors";
 const app = express();
+import dotenv from 'dotenv';
+dotenv.config();
 
 import {join, dirname} from 'path';
 import moment from "moment";

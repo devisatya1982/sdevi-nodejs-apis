@@ -26,7 +26,7 @@ const handleLogin = async (req, res) => {
                 }
             },
             process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: '45s' }
+            { expiresIn: '5m' }
         );
 
         const newRefreshToken = jwt.sign(
@@ -57,7 +57,8 @@ const handleLogin = async (req, res) => {
                 newRefreshTokenArray = [];
             }
 
-            res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
+            // res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
+            res.clearCookie('jwt', { httpOnly: true, sameSite: 'None'});
         }
 
         // Saving refreshToken with current email
@@ -65,7 +66,8 @@ const handleLogin = async (req, res) => {
         const result = await foundUser.save();
 
         // Creates Secure Cookie with refresh token
-        res.cookie('jwt', newRefreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
+        // res.cookie('jwt', newRefreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
+        res.cookie('jwt', newRefreshToken, { httpOnly: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
 
         // Send authorization roles and access token to email
         res.json({ accessToken });

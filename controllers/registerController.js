@@ -15,19 +15,17 @@ const handleNewUser = async (req, res) => {
         //encrypt the password
         const salt = await bcrypt.genSalt();
         const encryptedPwd = await bcrypt.hash(password, salt);
-        newUser._id = Date.now();
-        newUser.activationKey = Date.now() * 5;
+        // newUser._id = Date.now();
+        newUser.activationKey = Date.now();
 
         //create and store the new email
         const result = await User.create({
-            "_id":Date.now(),
             "firstName":newUser.firstName,
             "lastName":newUser.lastName,
             "email": newUser.email,
             "password": encryptedPwd,
             "activationKey":newUser.activationKey,
             "isActivated":false,
-            "roles": 'user'
         });
 
         console.log(result);
