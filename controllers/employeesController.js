@@ -4,7 +4,7 @@ const getAllEmployees = async (req, res) => {
   try {
     const employees = await Employee.find().exec();
     if (!employees)
-      return res.status(204).json({ message: "No employees found." });
+      return res.status(404).json({ message: "No employees found." }); // 404 Not Found
     await res.json(employees);
   } catch (error) {
     res.status(500).send("Error " + error);
@@ -12,16 +12,16 @@ const getAllEmployees = async (req, res) => {
 };
 
 const createNewEmployee = async (req, res) => {
-  const newEmployee = req.body;
-  delete newEmployee.employeeId;
-
-  if (!newEmployee?.employeeName || !newEmployee?.employeeSal) {
-    return res
-      .status(400)
-      .json({ message: "Employee name and salary are required" });
-  }
-
   try {
+    const newEmployee = req.body;
+    delete newEmployee.employeeId;
+
+    if (!newEmployee?.employeeName || !newEmployee?.employeeSal) {
+      return res
+        .status(400)
+        .json({ message: "Employee name and salary are required" });
+    }
+
     const result = await Employee.create({
       employeeName: newEmployee.employeeName,
       employeeSal: newEmployee.employeeSal,
@@ -44,8 +44,8 @@ const updateEmployee = async (req, res) => {
     const employee = await Employee.findOne({ _id: currentEmployee.id }).exec();
     if (!employee) {
       return res
-        .status(204)
-        .json({ message: `No employee matches ID ${currentEmployee.id}.` });
+        .status(404)
+        .json({ message: `No employee matches ID ${currentEmployee.id}.` }); // 404 Not Found
     }
     if (currentEmployee.employeeName)
       employee.employeeName = currentEmployee.employeeName;
@@ -71,8 +71,8 @@ const deleteEmployee = async (req, res) => {
 
     if (!employee) {
       return res
-        .status(204)
-        .json({ message: `No employee matches ID ${currentEmployeeId}.` });
+        .status(404)
+        .json({ message: `No employee matches ID ${currentEmployeeId}.` }); // 404 Not Found
     }
 
     const result = await employee.deleteOne();
@@ -83,9 +83,4 @@ const deleteEmployee = async (req, res) => {
   }
 };
 
-export default {
-  getAllEmployees,
-  createNewEmployee,
-  updateEmployee,
-  deleteEmployee,
-};
+export default { getAllEmployees, createNewEmployee, updateEmployee, deleteEmployee };

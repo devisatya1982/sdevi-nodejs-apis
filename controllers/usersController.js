@@ -6,8 +6,8 @@ const getAllUsers = async (req, res) => {
     const users = User.find();
     if (!users) return res.status(204).json({ message: "No users found" });
     res.json(users);
-  } catch (err) {
-    res.status(500).send("Error " + err);
+  } catch (error) {
+    res.status(500).send("Error " + error);
   }
 };
 
@@ -40,8 +40,8 @@ const addUser = async (req, res) => {
     console.log(result);
 
     res.status(201).json({success: `New email ${email} created!`});
-  } catch (err) {
-    res.status(500).send("Error " + err);
+  } catch (error) {
+    res.status(500).send("Error " + error);
   }
 };
 
@@ -70,8 +70,8 @@ const updateUser = async (req, res) => {
       const result = await user.save();
   
       res.json(result);
-    } catch (err) {
-      res.status(500).send("Error " + err);
+    } catch (error) {
+      res.status(500).send("Error " + error);
     }
   };
 
@@ -90,8 +90,8 @@ const deleteUser = async (req, res) => {
         const result = await user.deleteOne({ _id: currentUserId });
         res.json(result);
         
-    } catch (err) {
-        res.status(500).send("Error " + err);
+    } catch (error) {
+        res.status(500).send("Error " + error);
     }   
 }
 

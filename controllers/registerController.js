@@ -5,7 +5,7 @@ const handleNewUser = async (req, res) => {
     const newUser = req.body;
 
     const { email, password } = newUser;
-    if (!email || !password) return res.status(400).json({ 'message': 'Username and password are required.' });
+    if (!email || !password) return res.status(400).json({ 'message': 'Email and password are required.' });
 
     // check for duplicate usernames in the db
     const duplicate = await User.findOne({ email: email }).exec();
@@ -31,8 +31,8 @@ const handleNewUser = async (req, res) => {
         console.log(result);
 
         res.status(201).json({ 'success': `New user ${email} created! & please activate with the activation key sent to your email` });
-    } catch (err) {
-        res.status(500).json({ 'message': err.message });
+    } catch (error) {
+        res.status(500).json({ 'message': error });
     }
 }
 
