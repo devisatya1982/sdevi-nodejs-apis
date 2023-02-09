@@ -13,7 +13,7 @@ const handleLogout = async (req, res) => {
         const foundUser = await User.findOne({ refreshToken }).exec();
         if (!foundUser) {
             // res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
-            res.clearCookie('jwt', { httpOnly: true, sameSite: 'None'});
+            res.clearCookie('jwt', { httpOnly: true});
             return res.sendStatus(204);
         }
     
@@ -23,7 +23,7 @@ const handleLogout = async (req, res) => {
         console.log(JSON.stringify(result, null, 2));
     
         // res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
-        res.clearCookie('jwt', { httpOnly: true, sameSite: 'None' });
+        res.clearCookie('jwt', { httpOnly: true });
         res.sendStatus(204);
         
     } catch (error) {

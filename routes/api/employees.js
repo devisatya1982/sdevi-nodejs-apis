@@ -6,7 +6,7 @@ import verifyRoles from '../../middleware/verifyRoles.js';
 
 router.route('/')
     .get(employeesController.getAllEmployees)
-    .post(employeesController.createNewEmployee)
+    .post(verifyRoles(ROLES_LIST.Editor), employeesController.createNewEmployee)
     .put(employeesController.updateEmployee)
     // .delete(employeesController.deleteEmployee);
 
