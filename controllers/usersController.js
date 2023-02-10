@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 
 const getAllUsers = async (req, res) => {
   try {
-    const users = User.find();
+    const users = await User.find().exec();
     if (!users) return res.status(204).json({ message: "No users found" });
     res.json(users);
   } catch (error) {
