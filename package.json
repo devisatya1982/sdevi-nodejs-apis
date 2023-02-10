@@ -7,8 +7,10 @@
   "scripts": {
     "build": "echo congrats satya !",
     "start": "node server.js",
-    "devStart": "nodemon server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev-start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docker-build":"docker build -t sdevi-nodejs-apis .",
+    "docker-deploy":"docker run -p 9000:9000 sdevi-nodejs-apis"
   },
   "keywords": [],
   "author": "",
@@ -29,6 +31,6 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.20" 
   }
 }
