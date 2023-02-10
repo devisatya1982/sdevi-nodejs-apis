@@ -61,8 +61,8 @@ const handleLogin = async (req, res) => {
                     newRefreshTokenArray = [];
                 }
     
-                // res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
-                res.clearCookie('jwt', { httpOnly: true});
+                res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
+               // res.clearCookie('jwt', { httpOnly: true, sameSite: 'None'});
             }
     
             // Saving refreshToken with current email
@@ -70,11 +70,26 @@ const handleLogin = async (req, res) => {
             const result = await foundUser.save();
     
             // Creates Secure Cookie with refresh token
-            // res.cookie('jwt', newRefreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
-            res.cookie('jwt', newRefreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+            res.cookie('jwt', newRefreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
+           // res.cookie('jwt', newRefreshToken, { httpOnly: true,sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
     
             // Send authorization roles and access token to email
-            res.json({ accessToken });
+
+            const currentStatus = {
+                accessToken: accessToken,
+                message: "Tokens generated successfully!",
+                status: true,
+                user: {
+                  email: foundUser.email,
+                  name: foundUser.firstName + " " + foundUser.lastName,
+                  roles: roles
+                },
+              };
+        
+              res.status(200).send(currentStatus);
+
+
+          //  res.json({ accessToken });
     
         } else {
             res.sendStatus(401);
