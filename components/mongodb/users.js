@@ -15,7 +15,7 @@ let response = {
   user: {
     email: "",
     name: "",
-    roles: "",
+    roles: 0,
   },
 };
 

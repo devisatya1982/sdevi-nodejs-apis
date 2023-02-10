@@ -27,12 +27,8 @@ const userSchema = new Schema({
         required: false
     },
     roles: {
-        User: {
-            type: Number,
-            default: 1000
-        },
-        Editor: Number,
-        Admin: Number
+        type: Number,
+        required: true
     },
    
     refreshToken: [String]

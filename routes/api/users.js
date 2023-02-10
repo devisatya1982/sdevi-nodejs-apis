@@ -8,7 +8,6 @@ router.route('/')
     .get(usersController.getAllUsers)
     .post(usersController.addUser)
     .patch(usersController.updateUser)
-    //.get(verifyRoles(ROLES_LIST.Admin), usersController.getAllUsers)
+router.route('/:id')
     .delete(usersController.deleteUser);
-
 export default router;

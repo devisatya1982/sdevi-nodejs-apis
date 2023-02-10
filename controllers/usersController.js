@@ -14,7 +14,7 @@ const getAllUsers = async (req, res) => {
 const addUser = async (req, res) => {
   try {
     const newUser = req.body;
-    newUser.key = Date.now() + 9999999;
+    newUser.activationKey = Date.now() + 9999999;
 
     // check for duplicate usernames in the db
     const duplicate = await User.findOne({ email: newUser.email }).exec();
@@ -27,7 +27,6 @@ const addUser = async (req, res) => {
 
     //create and store the new email
     const result = await User.create({
-        "_id":Date.now(),
         "firstName":newUser.firstName,
         "lastName":newUser.lastName,
         "email": newUser.email,
@@ -37,9 +36,9 @@ const addUser = async (req, res) => {
         "roles": newUser.roles
     });
 
-    console.log(result);
+    // console.log(result);
 
-    res.status(201).json({success: `New email ${email} created!`});
+    res.status(201).json({message: `New email ${newUser.email} created!`});
   } catch (error) {
     res.status(500).send("Error " + error);
   }
@@ -77,7 +76,7 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
     try {
-        const currentUserId = Number(req.params._id);
+        const currentUserId = req?.params?.id;
 
         if (!currentUserId) return res.status(400).json({ "message": 'User ID required' });
     
