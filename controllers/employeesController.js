@@ -14,7 +14,7 @@ const getAllEmployees = async (req, res) => {
 const createNewEmployee = async (req, res) => {
   try {
     const newEmployee = req.body;
-    delete newEmployee.employeeId;
+    // delete newEmployee.employeeId;
 
     if (!newEmployee?.employeeName || !newEmployee?.employeeSal) {
       return res
@@ -36,16 +36,17 @@ const createNewEmployee = async (req, res) => {
 const updateEmployee = async (req, res) => {
   try {
     const currentEmployee = req.body;
+    const currentEmployeeID = req.body._id;
 
-    if (!currentEmployee.id) {
+    if (!currentEmployeeID) {
       return res.status(400).json({ message: "ID parameter is required." });
     }
 
-    const employee = await Employee.findOne({ _id: currentEmployee.id }).exec();
+    const employee = await Employee.findOne({ _id: currentEmployeeID }).exec();
     if (!employee) {
       return res
         .status(404)
-        .json({ message: `No employee matches ID ${currentEmployee.id}.` }); // 404 Not Found
+        .json({ message: `No employee matches ID ${currentEmployeeID}.` }); // 404 Not Found
     }
     if (currentEmployee.employeeName)
       employee.employeeName = currentEmployee.employeeName;

@@ -28,7 +28,7 @@ const handleLogin = async (req, res) => {
                     }
                 },
                 process.env.ACCESS_TOKEN_SECRET,
-                { expiresIn: '5s' }
+                { expiresIn: '1m' }
             );
     
             const newRefreshToken = jwt.sign(
@@ -91,7 +91,7 @@ const handleLogin = async (req, res) => {
           //  res.json({ accessToken });
     
         } else {
-            res.sendStatus(401);
+            res.status(404).json({ message: "Invalid Password" }); // 404 Not Found
         }
     } catch (error) {
         res.status(500).send("Error " + error);

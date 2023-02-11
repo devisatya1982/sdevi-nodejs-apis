@@ -1,5 +1,6 @@
 import User from '../model/User.js';
 import bcrypt from "bcrypt";
+import { createTransport } from "nodemailer";
 
 const handleNewUser = async (req, res) => {
     const newUser = req.body;
@@ -31,10 +32,46 @@ const handleNewUser = async (req, res) => {
 
         console.log(result);
 
-        res.status(201).json({ 'success': `New user ${email} created! & please activate with the activation key sent to your email` });
+        await emailSender(result, res, "signup");
+
+        res.status(201).json({ 'message': `New user ${email} created! & please activate with the activation key sent to your email` });
     } catch (error) {
         res.status(500).json({ 'message': error });
     }
 }
 
 export { handleNewUser };
+
+
+async function emailSender(userData, res, typeOfEmail) {
+    let transporter = createTransport({
+      service: "gmail",
+      host: "smtp.gmail.com",
+      secure: false,
+      auth: {
+        user: "devisatya1982@gmail.com",
+        pass: "mkdeavmkjgclgrya",
+      },
+    });
+  
+    let mailOptions = {
+      from: "devisatya1982@gmail.com",
+      to: userData.email,
+      subject:
+        typeOfEmail === "signup"
+          ? " SATYANARAYANA DEVI !! Activation Key  !!"
+          : "SATYANARAYANA DEVI !! Your Password !!",
+      text:
+        typeOfEmail === "signup"
+          ? `Your Activation Key : ${userData.activationKey}`
+          : ` Your Password is : ${userData.password}`,
+    };
+  
+    await transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        res.status(200).send(`Error has been generated! ==> ${error}`);
+      } else {
+        res.status(200).send(`New Email has been sent! ==> ${info.response}`);
+      }
+    });
+  }

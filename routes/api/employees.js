@@ -6,11 +6,10 @@ import verifyRoles from '../../middleware/verifyRoles.js';
 
 router.route('/')
     .get(employeesController.getAllEmployees)
-    .post(verifyRoles(ROLES_LIST.Editor), employeesController.createNewEmployee)
-    .put(employeesController.updateEmployee)
-    // .delete(employeesController.deleteEmployee);
+    .post(employeesController.createNewEmployee)
+    .patch(employeesController.updateEmployee)
 
-router.route('/:id')
+    router.route('/:id')
     .delete(employeesController.deleteEmployee);
 
 export default router;
