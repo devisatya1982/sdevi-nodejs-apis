@@ -57,11 +57,13 @@ import refreshRouter from './routes/refresh.js';
 import logoutRouter from './routes/logout.js';
 import employeesRouter from './routes/api/employees.js';
 import usersRouter from './routes/api/users.js';
+import versatileRouter from './routes/api/versatile.js';
 
 // routes
 app.use('/', rootRouter);
 app.use('/register', registerRouter);
 app.use('/auth', authRouter);
+app.use('/versatile', versatileRouter);
 app.use('/refresh', refreshRouter);
 app.use('/logout', logoutRouter);
 
