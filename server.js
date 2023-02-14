@@ -56,6 +56,7 @@ import authRouter from './routes/auth.js';
 import refreshRouter from './routes/refresh.js';
 import logoutRouter from './routes/logout.js';
 import employeesRouter from './routes/api/employees.js';
+import eventsRouter from './routes/api/events.js';
 import usersRouter from './routes/api/users.js';
 import versatileRouter from './routes/api/versatile.js';
 
@@ -67,8 +68,10 @@ app.use('/versatile', versatileRouter);
 app.use('/refresh', refreshRouter);
 app.use('/logout', logoutRouter);
 
+
 app.use(verifyJWT);
 app.use('/employees', employeesRouter);
+app.use('/events', eventsRouter);
 app.use('/users', usersRouter);
 
 

@@ -7,5 +7,4 @@ import verifyRoles from '../../middleware/verifyRoles.js';
 router.route('/marvel')
     .get(versatileController.getMarvelCharacters)
 
-
 export default router;

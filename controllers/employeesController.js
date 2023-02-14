@@ -42,18 +42,18 @@ const updateEmployee = async (req, res) => {
       return res.status(400).json({ message: "ID parameter is required." });
     }
 
-    const employee = await Employee.findOne({ _id: currentEmployeeID }).exec();
-    if (!employee) {
+    const foundEmployee = await Employee.findOne({ _id: currentEmployeeID }).exec();
+    if (!foundEmployee) {
       return res
         .status(404)
         .json({ message: `No employee matches ID ${currentEmployeeID}.` }); // 404 Not Found
     }
     if (currentEmployee.employeeName)
-      employee.employeeName = currentEmployee.employeeName;
+      foundEmployee.employeeName = currentEmployee.employeeName;
     if (currentEmployee.employeeSal)
-      employee.employeeSal = currentEmployee.employeeSal;
+      foundEmployee.employeeSal = currentEmployee.employeeSal;
 
-    const result = await employee.save();
+    const result = await foundEmployee.save();
 
     res.json(result);
   } catch (error) {

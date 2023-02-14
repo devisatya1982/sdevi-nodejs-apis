@@ -41,11 +41,6 @@ routerEvents.get("/events", verifyToken, async (req, res) => {
   }
 });
 
-// http://localhost:9000/mongodb/database/satyas/collection/event
-// {
-//   "name":"Chapel",
-//   "phone": 67890906781
-// }
 routerEvents.post("/events", verifyToken, async (req, res) => {
   const client = new MongoClient(uri);
   const database = "satyas";
@@ -82,11 +77,6 @@ routerEvents.post("/events", verifyToken, async (req, res) => {
   }
 });
 
-// http://localhost:9000/mongodb/database/satyas/collection/event
-// {
-//   "name":"Chapel",
-//   "phone": "1236547007"
-// }
 routerEvents.patch("/events", verifyToken, async (req, res) => {
   const client = new MongoClient(uri);
   const database = "satyas";
@@ -113,10 +103,6 @@ routerEvents.patch("/events", verifyToken, async (req, res) => {
   }
 });
 
-// http://localhost:9000/mongodb/database/satyas/collection/event
-// {
-//   "name":"Sangakkara"
-// }
 routerEvents.delete("/events", verifyToken, async (req, res) => {
   const client = new MongoClient(uri);
   const database = "satyas";
