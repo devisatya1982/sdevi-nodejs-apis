@@ -30,7 +30,7 @@ const handleLogin = async (req, res) => {
           },
         },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "1m" }
+        { expiresIn: "8s" }
       );
 
       const newRefreshToken = jwt.sign(
@@ -64,7 +64,6 @@ const handleLogin = async (req, res) => {
           sameSite: "None",
           secure: true,
         });
-        // res.clearCookie('jwt', { httpOnly: true, sameSite: 'None'});
       }
 
       // Saving refreshToken with current email
@@ -78,7 +77,6 @@ const handleLogin = async (req, res) => {
         sameSite: "None",
         maxAge: 24 * 60 * 60 * 1000,
       });
-      // res.cookie('jwt', newRefreshToken, { httpOnly: true,sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
 
       // Send authorization roles and access token to email
 

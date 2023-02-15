@@ -7,7 +7,6 @@ const handleRefreshToken = async (req, res) => {
         if (!cookies?.jwt) return res.sendStatus(401);
         const refreshToken = cookies.jwt;
         res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
-       // res.clearCookie('jwt', { httpOnly: true, sameSite: 'None'});
     
         const foundUser = await User.findOne({ refreshToken }).exec();
     
@@ -51,7 +50,7 @@ const handleRefreshToken = async (req, res) => {
                         }
                     },
                     process.env.ACCESS_TOKEN_SECRET,
-                    { expiresIn: '1m' }
+                    { expiresIn: '8s' }
                 );
     
                 const newRefreshToken = jwt.sign(
