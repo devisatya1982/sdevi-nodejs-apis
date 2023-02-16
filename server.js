@@ -5,7 +5,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import {join, dirname} from 'path';
-import moment from "moment";
 
 // import mongoDBRouter from "./components/mongodb/databases.js";
 // import employeeRouter from "./components/mongodb/employees.js";
@@ -61,12 +60,15 @@ import eventsRouter from './routes/api/events.js';
 import usersRouter from './routes/api/users.js';
 import versatileRouter from './routes/api/versatile.js';
 
+import stripeRouter from './routes/api/stripePayment.js';
+
 // routes
 app.use('/', rootRouter);
 app.use('/register', registerRouter);
 app.use('/auth', authRouter);
 app.use('/authNg', authNgRouter);
 app.use('/versatile', versatileRouter);
+app.use('/payment', stripeRouter);
 app.use('/refresh', refreshRouter);
 app.use('/logout', logoutRouter);
 
