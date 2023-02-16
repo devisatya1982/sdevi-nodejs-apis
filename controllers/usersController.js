@@ -63,8 +63,9 @@ const updateUser = async (req, res) => {
 
       if (currentUser.email) user.email = currentUser.email;
       if (currentUser.activationKey) user.activationKey = currentUser.activationKey;
-      if (currentUser.isActivated) user.isActivated = currentUser.isActivated;
       if (currentUser.roles) user.roles = currentUser.roles;
+      
+      user.isActivated = currentUser.isActivated;
   
       const result = await user.save();
   
