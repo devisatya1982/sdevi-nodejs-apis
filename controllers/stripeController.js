@@ -21,8 +21,19 @@ const createStripePayment = async (req, res) => {
       currency: "usd",
     });
 
+    let responseToUI = {
+      amount_debited : paymentIntent.amount,
+      shipping_address : paymentIntent.billing_details.address,
+      email: paymentIntent.billing_details.email,
+      name:paymentIntent.billing_details.name,
+      phone:paymentIntent.billing_details.phone,
+      status:paymentIntent.status,
+      id:paymentIntent.id
+    }
+    
 
-     console.log(`Response from stripe ${JSON.stringify(paymentIntent, null, 5)}`)
+
+     console.log(`Response from stripe ${responseToUI}`)
 
     res.status(200).json({ message: paymentIntent });
   } catch (err) {

@@ -58,6 +58,7 @@ import logoutRouter from './routes/logout.js';
 import employeesRouter from './routes/api/employees.js';
 import eventsRouter from './routes/api/events.js';
 import usersRouter from './routes/api/users.js';
+import shoppingRouter from './routes/api/shopping.js';
 import versatileRouter from './routes/api/versatile.js';
 
 import stripeRouter from './routes/api/stripePayment.js';
@@ -68,6 +69,7 @@ app.use('/register', registerRouter);
 app.use('/auth', authRouter);
 app.use('/authNg', authNgRouter);
 app.use('/versatile', versatileRouter);
+app.use('/shopping', shoppingRouter);
 app.use('/payment', stripeRouter);
 app.use('/refresh', refreshRouter);
 app.use('/logout', logoutRouter);
