@@ -1,10 +1,17 @@
 import express from 'express';
-const router = express.Router();
 import versatileController from '../../controllers/versatileController.js';
-import ROLES_LIST from '../../config/roles_list.js';
-import verifyRoles from '../../middleware/verifyRoles.js';
+const router = express.Router();
 
 router.route('/marvel')
     .get(versatileController.getMarvelCharacters)
+
+router.route('/geolocation')
+    .post(versatileController.postGeoLocation)
+
+router.route('/geolocation')
+    .get(versatileController.getAllGeoLocations)
+
+router.route('/geolocation/:id')
+    .delete(versatileController.deleteGeoLocation);
 
 export default router;

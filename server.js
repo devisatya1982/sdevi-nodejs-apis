@@ -68,7 +68,7 @@ app.use('/', rootRouter);
 app.use('/register', registerRouter);
 app.use('/auth', authRouter);
 app.use('/authNg', authNgRouter);
-app.use('/versatile', versatileRouter);
+
 app.use('/shopping', shoppingRouter);
 app.use('/payment', stripeRouter);
 app.use('/refresh', refreshRouter);
@@ -79,6 +79,7 @@ app.use(verifyJWT);
 app.use('/employees', employeesRouter);
 app.use('/events', eventsRouter);
 app.use('/users', usersRouter);
+app.use('/versatile', versatileRouter);
 
 
 // app.use(json());
