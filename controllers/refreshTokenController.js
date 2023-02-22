@@ -4,7 +4,10 @@ import User from '../model/User.js';
 const handleRefreshToken = async (req, res) => {
     try {
         const cookies = req.cookies;
-        if (!cookies?.jwt) return res.sendStatus(401);
+        // if (!cookies?.jwt) return res.sendStatus(401);
+        if (!cookies?.jwt){
+           return res.status(401).json({ 'message': 'No Cookie exist for the token sent to server!' });
+        }
         const refreshToken = cookies.jwt;
         res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
     
