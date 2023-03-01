@@ -60,6 +60,7 @@ import eventsRouter from './routes/api/events.js';
 import usersRouter from './routes/api/users.js';
 import shoppingRouter from './routes/api/shopping.js';
 import versatileRouter from './routes/api/versatile.js';
+import geoLocationRouter from './routes/api/geoLocation.js';
 
 import stripeRouter from './routes/api/stripePayment.js';
 
@@ -72,6 +73,7 @@ app.use('/authNg', authNgRouter);
 app.use('/shopping', shoppingRouter);
 app.use('/payment', stripeRouter);
 app.use('/refresh', refreshRouter);
+app.use('/geoLocation', geoLocationRouter);
 app.use('/logout', logoutRouter);
 
 
