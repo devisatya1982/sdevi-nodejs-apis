@@ -4,7 +4,7 @@ import User from '../model/User.js';
 const handleRefreshToken = async (req, res) => {
     try {
         const cookies = req.cookies;
-        // if (!cookies?.jwt) return res.sendStatus(401);
+        // if (!cookies?.jwt) return res.sendStatus(401); // Writing below IF block for user friendly message :(
         if (!cookies?.jwt){
            return res.status(401).json({ 'message': 'No Cookie exist for the token sent to server!' });
         }
@@ -23,7 +23,7 @@ const handleRefreshToken = async (req, res) => {
                     // Delete refresh tokens of hacked user
                     const hackedUser = await User.findOne({ email: decoded.email }).exec();
                     hackedUser.refreshToken = [];
-                    const result = await hackedUser.save();
+                    const result = await hackedUser.save(); // result ?  TODO
                 }
             )
             return res.sendStatus(403); //Forbidden
@@ -53,19 +53,20 @@ const handleRefreshToken = async (req, res) => {
                         }
                     },
                     process.env.ACCESS_TOKEN_SECRET,
-                    { expiresIn: '2h' }
+                    { expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN }
                 );
     
                 const newRefreshToken = jwt.sign(
                     { "email": foundUser.email },
                     process.env.REFRESH_TOKEN_SECRET,
-                    { expiresIn: '1d' }
+                    { expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN }
                 );
                 // Saving refreshToken with current user
                 foundUser.refreshToken = [...newRefreshTokenArray, newRefreshToken];
                 const result = await foundUser.save();
     
                 // Creates Secure Cookie with refresh token
+                // secure: true only serves on https
                 res.cookie('jwt', newRefreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
                // res.cookie('jwt', newRefreshToken, { httpOnly: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
     
