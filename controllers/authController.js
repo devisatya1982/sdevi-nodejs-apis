@@ -6,6 +6,9 @@ const handleLogin = async (req, res) => {
   try {
     const cookies = req.cookies;
 
+    const testEnv = process.env.NODE_ENV?.toLocaleLowerCase().trim();
+    
+
     const { email, password } = req.body;
     if (!email || !password)
       return res
@@ -14,7 +17,7 @@ const handleLogin = async (req, res) => {
 
     const foundUser = await User.findOne({ email: email }).exec();
 
-    if (!foundUser) return res.sendStatus(401); //Unauthorized
+    if (!foundUser) return res.sendStatus(401); 
 
     if (!foundUser.isActivated)
       return res.status(401).json({ message: "User must be activated." });
@@ -38,7 +41,6 @@ const handleLogin = async (req, res) => {
         process.env.REFRESH_TOKEN_SECRET
       );
 
-      // Changed to let keyword
       let newRefreshTokenArray = !cookies?.jwt
         ? foundUser.refreshToken
         : foundUser.refreshToken.filter((rtoken) => rtoken !== cookies.jwt);
@@ -46,14 +48,13 @@ const handleLogin = async (req, res) => {
       if (cookies?.jwt) {
         /* 
                 Scenario added here: 
-                    1) User logs in but never uses RT and does not logout 
+                    1) User logs in but never uses RT(Refresh Token) and does not logout 
                     2) RT is stolen
                     3) If 1 & 2, reuse detection is needed to clear all RTs when email logs in
                 */
         const refreshToken = cookies.jwt;
         const foundToken = await User.findOne({ refreshToken }).exec();
 
-        // Detected refresh token reuse!
         if (!foundToken) {
           // clear out ALL previous refresh tokens
           newRefreshTokenArray = [];
@@ -62,7 +63,7 @@ const handleLogin = async (req, res) => {
         res.clearCookie("jwt", {
           httpOnly: true,
           sameSite: "None",
-          secure: true,
+          secure: process.env.NODE_ENV === "production" ? true : false,
         });
       }
 
@@ -73,7 +74,7 @@ const handleLogin = async (req, res) => {
      // Creates Secure Cookie with refresh token
       res.cookie("jwt", newRefreshToken, {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === "production" ? true : false,
         sameSite: "None",
         maxAge: 24 * 60 * 60 * 1000,
       });
@@ -94,9 +95,8 @@ const handleLogin = async (req, res) => {
 
       res.status(200).send(currentStatus);
 
-      //  res.json({ accessToken });
     } else {
-      res.status(404).json({ message: "Invalid Password" }); // 404 Not Found
+      res.status(404).json({ message: "Invalid Password" });
     }
   } catch (error) {
     res.status(500).send("Error " + error);

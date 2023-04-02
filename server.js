@@ -6,14 +6,6 @@ dotenv.config();
 
 import {join, dirname} from 'path';
 
-// import mongoDBRouter from "./components/mongodb/databases.js";
-// import employeeRouter from "./components/mongodb/employees.js";
-// import userRouter from "./components/mongodb/users.js";
-// import emailsRouter from "./components/mongodb/emails.js";
-// import eventRouter from "./components/mongodb/events.js";
-// import marvelsRouter from "./components/combination/marvelAPI.js";
-// import authenticationRouter from "./components/authentication/auth-api.js";
-
 import corsOptions from "./config/corsOptions.js"
 import { logger } from "./middleware/logEvents.js"
 import errorHandler from "./middleware/errorHandler.js"
@@ -22,7 +14,7 @@ import cookieParser from "cookie-parser"
 import credentials from "./middleware/credentials.js"
 import mongoose from "mongoose"
 import connectDB from "./config/dbConn.js"
-const PORT = process.env.PORT || 9000;
+const PORT = process.env.PORT;
 
 // Connect to MongoDB
 connectDB();
@@ -83,19 +75,6 @@ app.use('/events', eventsRouter);
 app.use('/users', usersRouter);
 app.use('/versatile', versatileRouter);
 
-
-// app.use(json());
-
-// app.use("/mongodb", mongoDBRouter);
-// // app.use("/auth", authenticationRouter);
-// app.use("/employee", employeeRouter);
-// app.use("/user", userRouter);
-// app.use("/event", eventRouter);
-// app.use("/email", emailsRouter);
-// app.use("/marvels", marvelsRouter);
-
-
-
 app.all('*', (req, res) => {
   res.status(404);
   if (req.accepts('html')) {
@@ -110,6 +89,6 @@ app.all('*', (req, res) => {
 app.use(errorHandler);
 
 mongoose.connection.once('open', () => {
-  console.log('Connected to MongoDB');
+  console.log(`Connected to MongoDB && Environment is => ${process.env.NODE_ENV?.toLocaleLowerCase().trim()}`);
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });

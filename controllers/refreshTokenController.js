@@ -43,7 +43,7 @@ const handleRefreshToken = async (req, res) => {
                 }
                 if (err || foundUser.email !== decoded.email) return res.sendStatus(403);
     
-                // Refresh token was still valid
+              // Refresh token was still valid
               //  const roles = Object.values(foundUser.roles);
                 const accessToken = jwt.sign(
                     {
@@ -67,8 +67,12 @@ const handleRefreshToken = async (req, res) => {
     
                 // Creates Secure Cookie with refresh token
                 // secure: true only serves on https
-                res.cookie('jwt', newRefreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
-               // res.cookie('jwt', newRefreshToken, { httpOnly: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
+                res.cookie("jwt", newRefreshToken, {
+                  httpOnly: true,
+                  secure: process.env.NODE_ENV === "production" ? true : false,
+                  sameSite: "None",
+                  maxAge: 24 * 60 * 60 * 1000,
+                });
     
                 res.json({ accessToken })
             }

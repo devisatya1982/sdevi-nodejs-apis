@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "build": "echo congrats satya !",
-    "start": "node server.js",
-    "dev-start": "nodemon server.js",
+    "start": "node server.js ",
+    "dev-start": "set NODE_ENV=development && nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "docker-build": "docker build -t sdevi-nodejs-apis .",
     "docker-deploy": "docker run -p 9000:9000 sdevi-nodejs-apis"
